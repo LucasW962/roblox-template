@@ -1,0 +1,17 @@
+[package]
+name = "virtualbutfake/topbarplus"
+description = "Fork of topbarplus"
+license = "MPL2"
+version = "3.0.5"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+exclude = ["**"]
+include = [
+    "default.project.json",
+    "src",
+    "src/**",
+    "LICENSE",
+    "wally.toml",
+]
+
+[dependencies]

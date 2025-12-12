@@ -1,0 +1,29 @@
+[package]
+name = "lawor/serveit"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+Signal = "sleitnick/signal@1.5.0"
+Janitor = "howmanysmall/janitor@1.15.4"
+Charm = "littensy/charm@0.10.0"
+ReactCharm = "littensy/react-charm@0.3.0"
+React = "jsdotlua/react@17.2.1"
+ReactSpring = "chriscerie/react-spring@2.0.0"
+TopBarPlus = "virtualbutfake/topbarplus@3.0.5"
+Sift = "csqrl/sift@0.0.11"
+Promise = "evaera/promise@4.0.0"
+ByteNet = "ffrostflame/bytenet@0.1.0"
+Guard = "red-blox/guard@1.0.1"
+ReactRoblox = "jsdotlua/react-roblox@17.2.1"
+formatnumber = "kumarion/formatnumber@0.0.1"
+ZonePlus = "mattschrubb/zoneplus@3.2.0"
+chrono = "parihsz/chrono@1.2.6"
+zoneplus = "zac134/zoneplus@3.2.2"
+guard = "red-blox/guard@1.0.1"
+
+
+[server-dependencies]
+DocumentService = "anthony0br/documentservice@1.2.2"
+MockDataStoreService = "buildthomas/mockdatastoreservice@1.0.3"

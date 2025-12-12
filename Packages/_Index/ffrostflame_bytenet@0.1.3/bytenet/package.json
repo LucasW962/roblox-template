@@ -1,0 +1,12 @@
+{
+  "name": "@rbxts/bytenet",
+  "version": "0.1.1",
+  "description": "---",
+  "main": "src/index.d.ts",
+  "author": "ffrostfall",
+  "license": "MIT",
+  "module": "commonjs",
+  "devDependencies": {
+    "@rbxts/types": "^1.0.737"
+  }
+}

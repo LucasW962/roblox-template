@@ -4,5 +4,9 @@
 # New tools can be added by running `rokit add <tool>` in a terminal.
 
 [tools]
+<<<<<<< HEAD
 blink = "1axen/blink@0.17.3"
 wally-package-types = "JohnnyMorganz/wally-package-types@1.6.2"
+=======
+blink = "1axen/blink@0.17.3"
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4

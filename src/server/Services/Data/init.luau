@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 --!native
+=======
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4
 local DataService = {}
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,14 +19,22 @@ local ServerNetwork = require(ReplicatedStorage.Shared.Network.server)
 
 local DocuementStore = DocumentService.DocumentStore
 
+<<<<<<< HEAD
 export type DocumentCacheInterface = TypeFunctions.Required<typeof(RuntimeTypecheck(DataTemplate))>
 
 export type PlayerDocument = typeof(DocuementStore.new():GetDocument())
+=======
+type DocumentCacheInterface = TypeFunctions.Required<typeof(RuntimeTypecheck(DataTemplate))>
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4
 
 local CachedDocuments = {} :: { [Player]: typeof(DocumentService.Document.new()) }
 local DocumentCaches = {} :: { [Player]: DocumentCacheInterface }
 
+<<<<<<< HEAD
 local REMOVE_SENT = "__REMOVE__" -- blink wont send nil over network, using a sentinel
+=======
+local REMOVE_SENT = "__REMOVE__" -- slight bug with blink not sending nil values to atoms
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4
 
 local function ReconcileAndCheck(data: TypeFunctions.Partial<typeof(DataTemplate)>): DocumentCacheInterface
 	local Reconciled = Sift.Dictionary.mergeDeep(DataTemplate, data)

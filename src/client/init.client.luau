@@ -8,7 +8,11 @@ require(ReplicatedStorage.Shared.Client.atoms)
 
 local Plr = Players.LocalPlayer
 
+<<<<<<< HEAD
 for _, child in script.Modules:QueryDescendants(">ModuleScript") do
+=======
+for _, child in script.Modules:QueryDescendants("ModuleScript") do
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4
 	Client.LoadedModules[child.Name] = require(child)
 end
 

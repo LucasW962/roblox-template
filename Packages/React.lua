@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 local REQUIRED_MODULE = require(script.Parent._Index["jsdotlua_react@17.2.1"]["react"])
 export type Object = REQUIRED_MODULE.Object 
 export type Binding<T> = REQUIRED_MODULE.Binding<T>
@@ -33,3 +34,6 @@ export type React_Element<ElementType> = REQUIRED_MODULE.React_Element<ElementTy
 export type React_ElementType = REQUIRED_MODULE.React_ElementType 
 export type React_Node = REQUIRED_MODULE.React_Node 
 return REQUIRED_MODULE
+=======
+return require(script.Parent._Index["jsdotlua_react@17.2.1"]["react"])
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4

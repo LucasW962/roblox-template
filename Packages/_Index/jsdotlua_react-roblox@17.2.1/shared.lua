@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 local REQUIRED_MODULE = require(script.Parent.Parent["jsdotlua_shared@17.2.1"]["shared"])
 export type ReactEmpty = REQUIRED_MODULE.ReactEmpty 
 export type ReactFragment = REQUIRED_MODULE.ReactFragment 
@@ -50,3 +51,6 @@ export type React_ElementRef<C> = REQUIRED_MODULE.React_ElementRef<C>
 export type React_Portal = REQUIRED_MODULE.React_Portal 
 export type React_Key = REQUIRED_MODULE.React_Key 
 return REQUIRED_MODULE
+=======
+return require(script.Parent.Parent["jsdotlua_shared@17.2.1"]["shared"])
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4

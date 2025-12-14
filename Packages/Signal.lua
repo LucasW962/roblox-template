@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 local REQUIRED_MODULE = require(script.Parent._Index["sleitnick_signal@1.5.0"]["signal"])
 export type Connection = REQUIRED_MODULE.Connection 
 export type Signal<T...> = REQUIRED_MODULE.Signal<T...>
 return REQUIRED_MODULE
+=======
+return require(script.Parent._Index["sleitnick_signal@1.5.0"]["signal"])
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 local REQUIRED_MODULE = require(script.Parent.Parent["jsdotlua_luau-polyfill@1.2.7"]["luau-polyfill"])
 export type Array<T> = REQUIRED_MODULE.Array<T>
 export type AssertionError = REQUIRED_MODULE.AssertionError 
@@ -12,3 +13,6 @@ export type Timeout = REQUIRED_MODULE.Timeout
 export type Interval = REQUIRED_MODULE.Interval 
 export type WeakMap<T, V> = REQUIRED_MODULE.WeakMap<T, V>
 return REQUIRED_MODULE
+=======
+return require(script.Parent.Parent["jsdotlua_luau-polyfill@1.2.7"]["luau-polyfill"])
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4

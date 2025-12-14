@@ -1,5 +1,8 @@
 --!strict
+<<<<<<< HEAD
 --!native
+=======
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

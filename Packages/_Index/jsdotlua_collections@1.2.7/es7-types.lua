@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 local REQUIRED_MODULE = require(script.Parent.Parent["jsdotlua_es7-types@1.2.7"]["es7-types"])
 export type Object = REQUIRED_MODULE.Object 
 export type Array<T> = REQUIRED_MODULE.Array<T>
@@ -12,3 +13,6 @@ export type setCallbackFn<T> = REQUIRED_MODULE.setCallbackFn<T>
 export type setCallbackFnWithThisArg<T> = REQUIRED_MODULE.setCallbackFnWithThisArg<T>
 export type Set<T> = REQUIRED_MODULE.Set<T>
 return REQUIRED_MODULE
+=======
+return require(script.Parent.Parent["jsdotlua_es7-types@1.2.7"]["es7-types"])
+>>>>>>> e711346ee46bc1967ab87eca5c6d3e23e75dc2d4

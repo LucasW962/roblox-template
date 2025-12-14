@@ -1,0 +1,15 @@
+[package]
+name = "zac134/zoneplus"
+description = "Add Zone type for zoneplus3.2.0"
+license = "MIT"
+realm = "shared"
+registry = "https://github.com/UpliftGames/wally-index"
+version = "3.2.2"
+exclude = [
+	"docs", ".moonwave", "test",
+	"ZonePlus.rbxm", "ZonePlus.rbxmx",
+	".gitignore", "foreman.toml",
+	"default.project.json",
+]
+
+[dependencies]

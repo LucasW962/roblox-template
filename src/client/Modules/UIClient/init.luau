@@ -21,6 +21,7 @@ local closeHUD = {
 
 local defaultVisible = {
 	HUD = false,
+	RodShop = false,
 } :: { [string]: boolean }
 
 local persistentComponents = {
@@ -96,7 +97,7 @@ function module.createComponent<U>(name: string, moduleFunction: U): (() -> ())?
 	screenGui.Name = name
 	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	screenGui.DisplayOrder = 0
-	screenGui.Enabled = activeComponents[name] or false
+	screenGui.Enabled = true
 	screenGui.ResetOnSpawn = false
 
 	local player = Players.LocalPlayer
@@ -248,5 +249,9 @@ module.Init = function()
 end
 
 module.Init()
+
+task.delay(15, function()
+	UiState:ChangeState("RodShop")
+end)
 
 return module

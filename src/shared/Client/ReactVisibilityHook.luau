@@ -3,7 +3,24 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local React = require(ReplicatedStorage.Packages.React)
 local ReactSpring = require(ReplicatedStorage.Packages.ReactSpring)
 
-return function(isEnabled: boolean, closeDelay: number?)
+return function(
+	isEnabled: boolean,
+	closeDelay: number?
+): {
+	IsOpen: boolean,
+	IsEnabled: boolean,
+	style: {
+		["scale"]: React.Binding<number>,
+		["position"]: React.Binding<UDim2>,
+		["transparency"]: React.Binding<number>,
+		["bgTransparency"]: React.Binding<number>,
+		["bg2Transparency"]: React.Binding<number>,
+		["config"]: {
+			tension: React.Binding<number>,
+			friction: React.Binding<number>,
+		},
+	},
+}
 	closeDelay = closeDelay or 1.5
 
 	local isOpen, setOpen = React.useState(isEnabled)
@@ -63,8 +80,6 @@ return function(isEnabled: boolean, closeDelay: number?)
 	return {
 		isOpen = isOpen,
 		isVisible = isVisible,
-		style = style or {
-			position = UDim2.fromScale(0.5, 0.7),
-		},
+		style = style,
 	}
 end

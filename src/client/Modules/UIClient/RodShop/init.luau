@@ -21,6 +21,9 @@ return function(props)
 		Size = UDim2.fromScale(0.635938, 0.608897),
 		Visible = fullValues.isVisible,
 	}, {
+		UiScale = React.createElement("UIScale", {
+			Scale = fullValues.style.scale:getValue(),
+		}),
 		glow = React.createElement("ImageLabel", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1,

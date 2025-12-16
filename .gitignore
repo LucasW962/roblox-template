@@ -1,0 +1,12 @@
+# Project place file
+/ServeIt.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+sourcemap.json
+
+# Package dependencies
+Packages/
+_Index/

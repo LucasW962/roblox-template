@@ -1,0 +1,9 @@
+event Replicate {
+    from: Server,
+    type: Reliable,
+    call: SingleSync,
+    data: struct {
+        dataName: string,
+        dataValue: unknown,
+    }
+}

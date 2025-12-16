@@ -1,0 +1,6 @@
+option ClientOutput = "../src/shared/Network/client.luau"
+option ServerOutput = "../src/shared/Network/server.luau"
+option TypesOutput = "../src/shared/Network/types.luau"
+option PromiseLibrary = "ReplicatedStorage.Packages.Promise"
+
+import "controller.blink" as Controller

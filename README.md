@@ -10,4 +10,4 @@ After that do rokit install
 
 Next, do rojo sourcemap default.project.json --output sourcemap.json
 
-then lastly, do wally-package-types --sourcemap sourcemap.json Packages/ and run rojo serve
+then lastly, do wally-package-types --sourcemap sourcemap.json Packages/ and do wally-package-types --sourcemap sourcemap.json ServerPackages/   and run rojo serve

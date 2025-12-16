@@ -6,7 +6,10 @@
 /*.rbxl.lock
 
 sourcemap.json
+<<<<<<< HEAD
 
 # Package dependencies
 Packages/
 _Index/
+=======
+>>>>>>> e75da4b2fb94ef92b4b724282b34334589fca57f

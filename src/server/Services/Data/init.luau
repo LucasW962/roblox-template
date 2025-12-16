@@ -1,4 +1,5 @@
 --!native
+<<<<<<< HEAD
 
 --[[
 	Framework fully made by yoda962
@@ -6,6 +7,8 @@
 
 ]]
 
+=======
+>>>>>>> e75da4b2fb94ef92b4b724282b34334589fca57f
 local DataService = {}
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

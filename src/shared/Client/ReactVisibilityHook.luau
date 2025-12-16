@@ -8,7 +8,11 @@ return function(
 	closeDelay: number?
 ): {
 	IsOpen: boolean,
+<<<<<<< HEAD
 	IsVisible: boolean,
+=======
+	IsEnabled: boolean,
+>>>>>>> e75da4b2fb94ef92b4b724282b34334589fca57f
 	style: {
 		["scale"]: React.Binding<number>,
 		["position"]: React.Binding<UDim2>,

@@ -183,7 +183,9 @@ function DataService.PlayerInit(Player: Player)
 	})
 end
 
-function DataService.GetData(Player: Player): typeof(Promise.new(function(resolve, reject, onCancel) end))
+function DataService.GetData(Player: Player): typeof(Promise.new(
+	function(resolve: (boolean) -> ...unknown, reject: (string) -> ...unknown, onCancel: unknown) end
+))
 	return Promise.new(function(resolve, reject, onCancel)
 		local document = DataStore:GetDocument(tostring(Player.UserId)) :: typeof(DataStore.GetDocument(DataStore))
 		local data = document:Open()
@@ -209,7 +211,7 @@ function DataService.GetData(Player: Player): typeof(Promise.new(function(resolv
 	end)
 end
 
-function DataService.Read(Player: Player): typeof(DocuementStore.new():GetDocument())
+function DataService.Read(Player: Player): DocumentCacheInterface
 	local document = DataStore.GetDocument(DataStore, tostring(Player.UserId))
 	if not document.IsOpen(document) then
 		repeat

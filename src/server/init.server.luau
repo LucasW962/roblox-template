@@ -8,7 +8,7 @@ local LoadedModules = {} :: { [string]: ModuleScript }
 local DataService = require(script.Services.Data)
 
 local function RegisterDirectory(Folder: Folder)
-	for _, child: ModuleScript in Folder:QueryDescendants("ModuleScripts") do
+	for _, child: ModuleScript in Folder:QueryDescendants("ModuleScript") do
 		if child.Name:find(string.lower("client")) then
 			continue
 		end

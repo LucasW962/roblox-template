@@ -1,11 +1,4 @@
 --!native
-
---[[
-	Framework fully made by yoda962
-	Distibuted with MIT Liscense
-
-]]
-
 local DataService = {}
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -29,8 +22,13 @@ export type PlayerDocument = typeof(DocuementStore.new():GetDocument())
 
 local CachedDocuments = {} :: { [Player]: typeof(DocumentService.Document.new()) }
 local DocumentCaches = {} :: { [Player]: DocumentCacheInterface }
+local PlayerRuntimeData = {} :: { [Player]: { [string]: any } }
 
 local REMOVE_SENT = "__REMOVE__" -- blink wont send nil over network, using a sentinel
+
+local RuntimeTemplate = {
+	GoldFishes = 0,
+}
 
 local function ReconcileAndCheck(data: TypeFunctions.Partial<typeof(DataTemplate)>): DocumentCacheInterface
 	local Reconciled = Sift.Dictionary.mergeDeep(DataTemplate, data)
@@ -135,9 +133,12 @@ function DataService.Write(player: Player, properties: TypeFunctions.Partial<typ
 	print(changes, hasChanges)
 
 	if hasChanges then
+		local runtimeData = PlayerRuntimeData[player] or {}
+		local dataToSend = Sift.Dictionary.merge(changes, runtimeData)
+
 		ServerNetwork.Controller.Replicate.Fire(player, {
 			dataName = "DataDelta",
-			dataValue = changes,
+			dataValue = dataToSend,
 		})
 
 		DocumentCaches[player] = Sift.Dictionary.copyDeep(newCache)
@@ -159,8 +160,11 @@ function DataService.PlayerInit(Player: Player)
 	CachedDocuments[Player] = finalCache
 	DocumentCaches[Player] = Sift.Dictionary.copyDeep(finalCache)
 
+	PlayerRuntimeData[Player] = Sift.Dictionary.copyDeep(RuntimeTemplate)
+
 	docuement.GetClosedSignal(docuement):Once(function()
 		CachedDocuments[Player] = nil
+		PlayerRuntimeData[Player] = nil
 	end)
 
 	local AncestryConn: RBXScriptConnection? = nil
@@ -177,15 +181,15 @@ function DataService.PlayerInit(Player: Player)
 		docuement.Close(docuement)
 	end)
 
+	local dataWithRuntime = Sift.Dictionary.merge(finalCache, PlayerRuntimeData[Player])
+
 	ServerNetwork.Controller.Replicate.Fire(Player, {
 		dataName = "Data",
-		dataValue = finalCache,
+		dataValue = dataWithRuntime,
 	})
 end
 
-function DataService.GetData(Player: Player): typeof(Promise.new(
-	function(resolve: (boolean) -> ...unknown, reject: (string) -> ...unknown, onCancel: unknown) end
-))
+function DataService.GetData(Player: Player): typeof(Promise.new(function(resolve, reject, onCancel) end))
 	return Promise.new(function(resolve, reject, onCancel)
 		local document = DataStore:GetDocument(tostring(Player.UserId)) :: typeof(DataStore.GetDocument(DataStore))
 		local data = document:Open()
@@ -218,12 +222,30 @@ function DataService.Read(Player: Player): DocumentCacheInterface
 			task.wait()
 		until document.IsOpen(document)
 	end
-	return document.GetCache(document)
+
+	local cache = document.GetCache(document)
+	local runtimeData = PlayerRuntimeData[Player] or {}
+	return Sift.Dictionary.merge(cache, runtimeData)
 end
 
 function DataService.Save(player: Player): ()
 	local document = DataStore.GetDocument(DataStore, tostring(player.UserId))
 	document.Save(document)
+end
+
+function DataService.WriteRuntime(player: Player, properties: { [string]: any })
+	if not PlayerRuntimeData[player] then
+		PlayerRuntimeData[player] = Sift.Dictionary.copyDeep(RuntimeTemplate)
+	end
+
+	for key, value in properties do
+		PlayerRuntimeData[player][key] = value
+	end
+
+	ServerNetwork.Controller.Replicate.Fire(player, {
+		dataName = "DataDelta",
+		dataValue = properties,
+	})
 end
 
 return DataService

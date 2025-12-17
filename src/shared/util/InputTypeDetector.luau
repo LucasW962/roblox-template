@@ -4,8 +4,21 @@ local InputTypeDetector = {}
 
 export type PlatformType = "Keyboard" | "Mobile" | "Xbox" | "Playstation"
 
+export type InputConfig = {
+	Keyboard: { Enum.KeyCode | Enum.UserInputType },
+	Mobile: { Enum.KeyCode | Enum.UserInputType },
+	Xbox: { Enum.KeyCode | Enum.UserInputType },
+	Playstation: { Enum.KeyCode | Enum.UserInputType },
+}
+
+export type ActionCallback = (inputObject: InputObject, gameProcessed: boolean) -> ()
+
 local currentPlatformType: PlatformType = "Keyboard"
 local changeCallbacks: { (PlatformType) -> () } = {}
+local registeredActions: { [string]: InputConfig } = {}
+local actionCallbacks: { [string]: { ActionCallback } } = {}
+
+InputTypeDetector.Activated = false
 
 local function getCategoryOfInputType(inputType: Enum.UserInputType): PlatformType | "Unknown"
 	local inputTypeString = tostring(inputType)
@@ -58,10 +71,55 @@ local function updateInputType(inputType: Enum.UserInputType)
 	end
 end
 
-local function initialize()
+local function matchesInputConfig(inputObject: InputObject, inputs: { Enum.KeyCode | Enum.UserInputType }): boolean
+	for _, input in inputs do
+		if typeof(input) == "EnumItem" then
+			if input.EnumType == Enum.UserInputType then
+				if inputObject.UserInputType == input then
+					return true
+				end
+			elseif input.EnumType == Enum.KeyCode then
+				if inputObject.KeyCode == input then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function checkActionTrigger(actionName: string, inputObject: InputObject): boolean
+	local config = registeredActions[actionName]
+	if not config then
+		return false
+	end
+
+	local platformInputs = config[currentPlatformType]
+	if not platformInputs then
+		return false
+	end
+
+	return matchesInputConfig(inputObject, platformInputs)
+end
+
+function InputTypeDetector.initialize()
+	if InputTypeDetector.Activated then
+		return
+	end
 	currentPlatformType = getDefaultPlatformType()
 
 	UserInputService.LastInputTypeChanged:Connect(updateInputType)
+	InputTypeDetector.Activated = true
+
+	UserInputService.InputBegan:Connect(function(inputObject, gameProcessed)
+		for actionName, callbacks in actionCallbacks do
+			if checkActionTrigger(actionName, inputObject) then
+				for _, callback in callbacks do
+					task.spawn(callback, inputObject, gameProcessed)
+				end
+			end
+		end
+	end)
 end
 
 --[=[
@@ -120,6 +178,90 @@ function InputTypeDetector.SetPlatform(platformType: PlatformType)
 	end
 end
 
-initialize()
+--[=[
+	Register a named action with platform-specific input mappings
+	
+	@param actionName string -- Unique name for the action (e.g., "Fishing", "Attack", "Use")
+	@param config InputConfig -- Input mappings for each platform
+	
+	Example:
+	```lua
+	InputTypeDetector.RegisterAction("Fishing", {
+		Keyboard = { Enum.UserInputType.MouseButton1 },
+		Mobile = { Enum.UserInputType.Touch },
+		Xbox = { Enum.KeyCode.ButtonA },
+		Playstation = { Enum.KeyCode.ButtonA },
+	})
+	```
+]=]
+function InputTypeDetector.RegisterAction(actionName: string, config: InputConfig)
+	registeredActions[actionName] = config
+	if not actionCallbacks[actionName] then
+		actionCallbacks[actionName] = {}
+	end
+end
+
+--[=[
+	Subscribe to a specific named action
+	
+	@param actionName string -- Name of the registered action to listen for
+	@param callback function -- Called with (InputObject, gameProcessed) when action input is detected
+	@return function -- Unsubscribe function
+	
+	Example:
+	```lua
+	local disconnect = InputTypeDetector.OnAction("Fishing", function(input, processed)
+		if processed then return end
+		startFishing()
+	end)
+	```
+]=]
+function InputTypeDetector.OnAction(actionName: string, callback: ActionCallback): () -> ()
+	if not actionCallbacks[actionName] then
+		actionCallbacks[actionName] = {}
+	end
+
+	table.insert(actionCallbacks[actionName], callback)
+
+	-- Return unsubscribe function
+	return function()
+		local callbacks = actionCallbacks[actionName]
+		if callbacks then
+			local index = table.find(callbacks, callback)
+			if index then
+				table.remove(callbacks, index)
+			end
+		end
+	end
+end
+
+--[=[
+	Unregister an action and remove all its callbacks
+	
+	@param actionName string -- Name of the action to unregister
+]=]
+function InputTypeDetector.UnregisterAction(actionName: string)
+	registeredActions[actionName] = nil
+	actionCallbacks[actionName] = nil
+end
+
+--[=[
+	Get the input configuration for a specific action and platform
+	
+	@param actionName string -- Name of the registered action
+	@param platform PlatformType? -- Platform to get inputs for (defaults to current)
+	@return { Enum.KeyCode | Enum.UserInputType }? -- Array of inputs for the platform
+]=]
+function InputTypeDetector.GetActionInputs(
+	actionName: string,
+	platform: PlatformType?
+): { Enum.KeyCode | Enum.UserInputType }?
+	local config = registeredActions[actionName]
+	if not config then
+		return nil
+	end
+
+	return config[platform or currentPlatformType]
+end
 
 return InputTypeDetector

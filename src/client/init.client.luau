@@ -5,7 +5,7 @@ Client.LoadedModules = {} :: { [string]: { [string]: any } }
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 require(ReplicatedStorage.Shared.Client.atoms)
-require(ReplicatedStorage.Shared.util.InputTypeDetector)
+require(ReplicatedStorage.Shared.util.InputTypeDetector).initialize()
 
 local Plr = Players.LocalPlayer
 

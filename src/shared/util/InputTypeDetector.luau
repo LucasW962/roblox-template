@@ -18,51 +18,31 @@ local changeCallbacks: { (PlatformType) -> () } = {}
 local registeredActions: { [string]: InputConfig } = {}
 local actionCallbacks: { [string]: { ActionCallback } } = {}
 
+local Debounces: { [string]: number } = {}
+
 InputTypeDetector.Activated = false
 
-local function getCategoryOfInputType(inputType: Enum.UserInputType): PlatformType | "Unknown"
-	local inputTypeString = tostring(inputType)
-
-	if string.find(inputTypeString, "Gamepad") then
-		local buttonString = UserInputService:GetStringForKeyCode(Enum.KeyCode.ButtonA)
-		return if buttonString == "ButtonA" then "Xbox" else "Playstation"
-	end
-
-	if inputType == Enum.UserInputType.Keyboard or string.find(inputTypeString, "Mouse") then
-		return "Keyboard"
-	end
-
-	if inputType == Enum.UserInputType.Touch then
-		return "Mobile"
-	end
-
-	return "Unknown"
+local function getGamepadType(): "Xbox" | "Playstation"
+	local buttonString = UserInputService:GetStringForKeyCode(Enum.KeyCode.ButtonA)
+	return if buttonString == "ButtonA" then "Xbox" else "Playstation"
 end
 
-local function getDefaultPlatformType(): PlatformType
-	local lastInput = UserInputService:GetLastInputType()
-	local category = getCategoryOfInputType(lastInput)
-
-	if category ~= "Unknown" then
-		return category
-	end
-
-	if UserInputService.KeyboardEnabled and UserInputService.MouseEnabled then
-		return "Keyboard"
-	elseif UserInputService.TouchEnabled then
+local function preferredInputToPlatform(preferredInput: Enum.PreferredInput): PlatformType
+	if preferredInput == Enum.PreferredInput.Touch then
 		return "Mobile"
-	elseif UserInputService.GamepadEnabled then
-		local buttonString = UserInputService:GetStringForKeyCode(Enum.KeyCode.ButtonA)
-		return if buttonString == "ButtonA" then "Xbox" else "Playstation"
-	else
+	elseif preferredInput == Enum.PreferredInput.Gamepad then
+		return getGamepadType()
+	elseif preferredInput == Enum.PreferredInput.KeyboardAndMouse then
 		return "Keyboard"
 	end
+	return "Keyboard"
 end
 
-local function updateInputType(inputType: Enum.UserInputType)
-	local newPlatform = getCategoryOfInputType(inputType)
+local function updatePlatformType()
+	local preferredInput = UserInputService.PreferredInput
+	local newPlatform = preferredInputToPlatform(preferredInput)
 
-	if newPlatform ~= "Unknown" and newPlatform ~= currentPlatformType then
+	if newPlatform ~= currentPlatformType then
 		currentPlatformType = newPlatform
 
 		for _, callback in changeCallbacks do
@@ -106,9 +86,10 @@ function InputTypeDetector.initialize()
 	if InputTypeDetector.Activated then
 		return
 	end
-	currentPlatformType = getDefaultPlatformType()
 
-	UserInputService.LastInputTypeChanged:Connect(updateInputType)
+	currentPlatformType = preferredInputToPlatform(UserInputService.PreferredInput)
+
+	UserInputService:GetPropertyChangedSignal("PreferredInput"):Connect(updatePlatformType)
 	InputTypeDetector.Activated = true
 
 	UserInputService.InputBegan:Connect(function(inputObject, gameProcessed)
@@ -216,18 +197,33 @@ end
 	end)
 	```
 ]=]
-function InputTypeDetector.OnAction(actionName: string, callback: ActionCallback): () -> ()
+function InputTypeDetector.OnAction(actionName: string, callback: ActionCallback, Debounce: number): () -> ()
 	if not actionCallbacks[actionName] then
 		actionCallbacks[actionName] = {}
 	end
 
-	table.insert(actionCallbacks[actionName], callback)
+	local wrappedCallback = callback
 
-	-- Return unsubscribe function
+	if Debounce and Debounce > 0 then
+		local debounceKey = actionName .. tostring(callback)
+		wrappedCallback = function(inputObject: InputObject, gameprocessed: boolean)
+			if Debounces[debounceKey] then
+				return
+			end
+
+			Debounces[debounceKey] = true
+			task.delay(Debounce, function()
+				Debounces[debounceKey] = nil
+			end)
+
+			callback(inputObject, gameprocessed)
+		end
+	end
+	table.insert(actionCallbacks[actionName], wrappedCallback)
 	return function()
 		local callbacks = actionCallbacks[actionName]
 		if callbacks then
-			local index = table.find(callbacks, callback)
+			local index = table.find(callbacks, wrappedCallback)
 			if index then
 				table.remove(callbacks, index)
 			end

@@ -423,4 +423,100 @@ export type function Atomize(object: type)
 	return result
 end
 
+export type function PathStrings(tableType: type)
+	if tableType.tag ~= "table" then
+		return types.never
+	end
+
+	local paths = {}
+	for key, prop in tableType:properties() do
+		if key.tag == "singleton" and typeof(key:value()) == "string" then
+			local keyStr = key:value()
+			if prop.read.tag == "table" then
+				table.insert(paths, types.singleton(keyStr))
+
+				local subPaths = PathStrings(prop.read)
+				if subPaths.tag == "union" then
+					for _, subPath in subPaths:components() do
+						if subPath.tag == "singleton" and typeof(subPath:value()) == "string" then
+							table.insert(paths, types.singleton(keyStr .. "/" .. subPath:value()))
+						end
+					end
+				elseif subPaths.tag == "singleton" and typeof(subPaths:value()) == "string" then
+					table.insert(paths, types.singleton(keyStr .. "/" .. subPaths:value()))
+				elseif subPaths.tag == "never" then
+				end
+			else
+				table.insert(paths, types.singleton(keyStr))
+			end
+		end
+	end
+
+	if #paths == 0 then
+		return types.never
+	elseif #paths == 1 then
+		return paths[1]
+	else
+		return types.unionof(unpack(paths))
+	end
+end
+
+export type function IndexByPath(tableType: type, pathType: type)
+	if not pathType:is("singleton") or typeof(pathType:value()) ~= "string" then
+		return types.never
+	end
+
+	local path = pathType:value() :: string
+	local segments = string.split(path, "/")
+
+	local current = tableType
+	for _, segment in segments do
+		if current.tag ~= "table" then
+			return types.never
+		end
+
+		local found = false
+		for key, prop in current:properties() do
+			if key:is("singleton") and key:value() == segment then
+				current = prop.read
+				found = true
+				break
+			end
+		end
+
+		if not found then
+			return types.never
+		end
+	end
+
+	return current
+end
+
+export type function PathToTypeMap(tableType: type)
+	local result = types.newtable()
+	local pathStrings = PathStrings(tableType)
+
+	if pathStrings.tag == "never" then
+		return result
+	end
+
+	if pathStrings.tag == "singleton" then
+		local path = pathStrings
+		local valueType = IndexByPath(tableType, path)
+		result:setproperty(path, valueType)
+		return result
+	end
+
+	if pathStrings.tag == "union" then
+		for _, path in pathStrings:components() do
+			if path:is("singleton") and typeof(path:value()) == "string" then
+				local valueType = IndexByPath(tableType, path)
+				result:setproperty(path, valueType)
+			end
+		end
+	end
+
+	return result
+end
+
 return 1

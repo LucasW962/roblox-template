@@ -105,7 +105,10 @@ local function GetChangedPaths(
 	return changes, hasChanges
 end
 
-function DataService.Write(player: Player, properties: TypeFunctions.Partial<typeof(DataTemplate)>)
+function DataService.Write(
+	player: Player,
+	properties: TypeFunctions.Partial<TypeFunctions.PathToTypeMap<typeof(DataTemplate)>>
+)
 	local document = DataStore.GetDocument(DataStore, tostring(player.UserId))
 	local dataCache = document.GetCache(document)
 	local newCache = Sift.Dictionary.copyDeep(dataCache)

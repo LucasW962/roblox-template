@@ -1,4 +1,9 @@
+--!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local UserInputService = game:GetService("UserInputService")
+
+local Promise = require(ReplicatedStorage.Packages.Promise)
 
 local InputTypeDetector = {}
 
@@ -50,6 +55,12 @@ local function updatePlatformType()
 		end
 	end
 end
+
+type specialType<T...> = {
+	IdkWhatShouldGoHere: ((T...) -> number) -> string,
+}
+
+type returnFunc = (x: number, y: number) -> specialType<number, string>
 
 local function matchesInputConfig(inputObject: InputObject, inputs: { Enum.KeyCode | Enum.UserInputType }): boolean
 	for _, input in inputs do

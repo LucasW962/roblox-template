@@ -56,12 +56,6 @@ local function updatePlatformType()
 	end
 end
 
-type specialType<T...> = {
-	IdkWhatShouldGoHere: ((T...) -> number) -> string,
-}
-
-type returnFunc = (x: number, y: number) -> specialType<number, string>
-
 local function matchesInputConfig(inputObject: InputObject, inputs: { Enum.KeyCode | Enum.UserInputType }): boolean
 	for _, input in inputs do
 		if typeof(input) == "EnumItem" then

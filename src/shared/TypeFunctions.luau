@@ -1,3 +1,4 @@
+--!strict
 export type function Partial(object: type)
 	local tag = object.tag
 
@@ -329,25 +330,36 @@ type function ToKebabCase(s: type)
 	return types.singleton(kebab)
 end
 
-export type function Pick(object: type, ...: type)
+export type function Pick(object: type, keys: type)
 	if object.tag ~= "table" then
 		return object
 	end
 
 	local result = types.newtable()
-	local keys = { ... }
+
+	local key_list = {}
+	if keys.tag == "union" then
+		for _, component in keys:components() do
+			if component:is("singleton") and typeof(component:value()) == "string" then
+				table.insert(key_list, component:value())
+			end
+		end
+	end
 
 	for key, prop in object:properties() do
-		for _, pickKey in keys do
-			if pickKey:is("singleton") and typeof(pickKey:value()) == "string" then
-				if key == pickKey:value() then
-					if prop.read ~= prop.write then
-						result:setreadproperty(key, prop.read)
-						result:setwriteproperty(key, prop.write)
-					else
-						result:setproperty(key, prop.read)
+		for key, prop in object:properties() do
+			if key:is("singleton") and typeof(key:value()) == "string" then
+				local key_str = key:value()
+				for _, pick_key in key_list do
+					if key_str == pick_key then
+						if prop.read ~= prop.write then
+							result:setreadproperty(key, prop.read)
+							result:setwriteproperty(key, prop.write)
+						else
+							result:setproperty(key, prop.read)
+						end
+						break
 					end
-					break
 				end
 			end
 		end
